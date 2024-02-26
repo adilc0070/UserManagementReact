@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import './App.css'
+import SignInPage from './components/SignInSignUp'
+import HomePage from './components/HomePage'
+import AdminDashBoard from './components/AdminDashBoard'
+import AdminPage from './pages/AdminPage'
+
 function App() {
-  const [count, setCount] = useState('')
-  useEffect(()=>{
-    axios.get("http://localhost:9001").then((res)=>{
-      setCount(res.data.success)
-    })
-  },[])
+
+
   return (
     <>
-      <h1>{count}</h1>
+
+      {/* <SignInPage/>
+      <AdminDashBoard/>
+      <HomePage/> */}
+      <AdminPage/>
     </>
+
   )
 }
 
