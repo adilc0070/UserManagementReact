@@ -1,28 +1,28 @@
-import mongoose from "mongoose";
-let userScheema=mongoose.Schema({
-    name:{
-        type:String,
-        require:true
+let mongoose = require("mongoose");
+let userScheema = mongoose.Schema({
+    name: {
+        type: String,
+        require: true
     },
-    email:{
-        type:String,
-        require:true
+    email: {
+        type: String,
+        require: true
     },
-    phone:{
-        type:String
+    phone: {
+        type: String
     },
-    profile:{
-        type:String
+    profile: {
+        type: String
     },
-    password:{
-        type:String,
-        require:true
+    password: {
+        type: String,
+        require: true
     },
-    adminOrNot:{
-        type:Boolean,
-        require:true
+    adminOrNot: {
+        type: Boolean,
+        require: true
     }
 })
 
-let userModal=module.exports("user",userScheema)
-export default userModal
+let userModal = mongoose.model("user", userScheema)
+module.exports = { userModal }

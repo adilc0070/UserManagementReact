@@ -1,7 +1,7 @@
-import userModal from "../Modals/user.js";
-import bcrypt from 'bcrypt'
+let userModal= require( "../Modals/user.js");
+let bcrypt= require( 'bcrypt')
 
-let hashPassword = bcrypt.hash(password, (err, hash) => {
+let hashPassword=() => bcrypt.hash(password, (err, hash) => {
     if (err) return
     else hash
 })
@@ -9,8 +9,10 @@ let hashPassword = bcrypt.hash(password, (err, hash) => {
 
 let signUp = async (req, res) => {
     try {
+        console.log('here');
         let existedOrNot = await userModal.findOne({ email: req.body.email })
         if (!existedOrNot) {
+            console.log('newAccount');
             let data = new userModal({
                 name: req.body.name,
                 email: req.body.email,
@@ -47,4 +49,4 @@ let logIn = async (req, res) => {
     }
 }
 
-export { signUp, logIn } 
+module.exports= { signUp, logIn } 

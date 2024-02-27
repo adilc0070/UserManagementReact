@@ -4,16 +4,23 @@ import HomePage from './components/HomePage'
 import AdminDashBoard from './components/AdminDashBoard'
 import AdminPage from './pages/AdminPage'
 
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { sample } from '../api/axios'
+
 function App() {
 
 
   return (
     <>
-
-      {/* <SignInPage/>
-      <AdminDashBoard/>
-      <HomePage/> */}
-      <AdminPage/>
+      <Router>
+          <h1 className='text-3xl text-white-500 font-bold underline' onClick={() =>sample()}>hello</h1>
+        <Routes>
+          <Route path='/register' element={<SignInPage />} />
+          <Route path='/admin' element={<AdminPage />} />
+          <Route path='/admin/dashboard' element={<AdminDashBoard />} />
+          <Route path='/' element={<HomePage />} />
+        </Routes>
+      </Router>
     </>
 
   )
