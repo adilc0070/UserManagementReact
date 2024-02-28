@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { LogInApi, SignUpApi } from '../api/axios';
+import { useNavigate } from 'react-router';
 
 
 
@@ -10,7 +12,7 @@ function SignInPage() {
     let [admin, setAdmin] = useState(0);
     let [error, setError] = useState('');
     let [phone, setPhone] = useState('');
-    console.log(admin);
+    let navigate=useNavigate();
     let signUp = async (e) => {
 
         e.preventDefault();
@@ -30,8 +32,23 @@ function SignInPage() {
             return;
         } else if (phone.trim() === "" || phone.length < 10) {
             setError("invalid phone number");
+            return
         } else setError("");
-        console.log('im here in sign up datas are valid:', email, password, name, phone, admin);
+        await SignUpApi({data:{email,password,name,phone,admin}}).then((res)=>{
+            if(res.success){
+                alert(res.errorMessage);
+                navigate('/')
+            }else{
+                alert(res.errorMessage);
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
+
+
+        
+        
+        
     }
     let signIn=async (e)=>{
         e.preventDefault();
@@ -46,6 +63,12 @@ function SignInPage() {
             setError("password should be atleast 8 characters long");
             return;
         }else setError("");
+        await LogInApi({data:{email,password}}).then((res)=>{
+            if(res.message){
+                alert(res.message);
+                navigate('/home')
+            }
+        })
         console.log('im here in sign in datas are valid:', email, password);
 
     }

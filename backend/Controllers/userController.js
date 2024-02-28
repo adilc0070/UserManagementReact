@@ -1,29 +1,28 @@
 let userModal= require( "../Modals/user.js");
 let bcrypt= require( 'bcrypt')
 
-let hashPassword=() => bcrypt.hash(password, (err, hash) => {
-    if (err) return
-    else hash
-})
+
 
 
 let signUp = async (req, res) => {
     try {
-        console.log('here');
-        let existedOrNot = await userModal.findOne({ email: req.body.email })
+        let frontendData=  req.body
+  
+        let existedOrNot = await userModal.findOne({ email: frontendData.email })
         if (!existedOrNot) {
+            let password=await bcrypt.hash(frontendData.password,10)
             console.log('newAccount');
             let data = new userModal({
-                name: req.body.name,
-                email: req.body.email,
-                phone: req.body.phone,
-                password: hashPassword(req.body.password),
-                adminOrNot: req.body.adminOrNot
+                name: frontendData.name,
+                email: frontendData.email,
+                phone: frontendData.phone,
+                password: password,
+                adminOrNot: frontendData.isAdmin
             })
             data.save()
-            res.json({ success: true })
+            res.json({ success: true, message: "user created successfully" , result:data})
         } else {
-            res.json({ success: false, message: "user already exist, please Login...!" })
+            res.json({ success: false, errorMessage: "user already exist, please Login...!" })
         }
 
     } catch (error) {
@@ -34,14 +33,15 @@ let signUp = async (req, res) => {
 let logIn = async (req, res) => {
 
     try {
-        let data = await userModal.findOne({ email: req.body.email })
-        if (!data) {
-            res.json({ success: false, message: "user not found" })
+        let aa=req.body
+        let userData = await userModal.findOne({ email: aa.email })
+        if (!userData) {
+            res.json({ success: false, errorMessage: "user not found" })
         } else {
-            if (bcrypt.compare(req.body.password, data.password)) {
-                res.json({ success: true })
+            if (bcrypt.compare(aa.password, userData.password)) {
+                res.json({ success: true ,message:"login success"})
             } else {
-                res.json({ success: false, message: "password not match" })
+                res.json({ success: false, errorMessage: "password not match" })
             }
         }
     } catch (error) {
