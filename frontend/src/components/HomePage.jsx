@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function HomePage() {
     const [selectedImage, setSelectedImage] = useState(null);
-
+    let navigate=useNavigate()
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -75,8 +76,9 @@ function HomePage() {
                         </div>
                     </div>
 
-                    <div className="flex justify-end mt-6">
-                        <button className="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-pink-500 rounded-md hover:bg-pink-700 focus:outline-none focus:bg-gray-600">Save</button>
+                    <div className="flex justify-around mt-6">
+                        <button className="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-slate-500 rounded-md hover:bg-slate-700 focus:outline-none focus:bg-gray-600" onClick={()=>{navigate('/')}} >cancel</button>
+                        <button type='submit' className="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-green-500 rounded-md hover:bg-green-700 focus:outline-none focus:bg-gray-600">Save</button>
                     </div>
                 </form>
             </section>

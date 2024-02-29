@@ -1,21 +1,25 @@
 import React, { useState } from 'react'
 import { LogInApi, SignUpApi } from '../api/axios';
 import { useNavigate } from 'react-router';
-
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '../store/slice/slice';
 
 
 function SignInPage() {
     const [activePage, setActivePage] = useState('signUp');
-    let [email, setEmail] = useState('');
-    let [name, setName] = useState('');
-    let [password, setPassword] = useState('');
-    let [admin, setAdmin] = useState(0);
     let [error, setError] = useState('');
-    let [phone, setPhone] = useState('');
-    let navigate=useNavigate();
+    let navigate = useNavigate();
+    let dispatch = useDispatch();
     let signUp = async (e) => {
-
         e.preventDefault();
+        let newda = new FormData(e.currentTarget);
+        let email = newda.get("email")
+        let name = newda.get("name")
+        let password = newda.get("password")
+        let phone = newda.get("phone")
+        let admin = newda.get("isAdmin")
+        console.log(email, name, password, phone, admin);
+
         function validateEmail(email) {
             const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
             return pattern.test(email);
@@ -34,46 +38,31 @@ function SignInPage() {
             setError("invalid phone number");
             return
         } else setError("");
-        await SignUpApi({data:{email,password,name,phone,admin}}).then((res)=>{
-            if(res.success){
+        await SignUpApi({ data: { email, password, name, phone, admin } }).then((res) => {
+            if (res.success) {
+                console.log(res);
                 alert(res.errorMessage);
+                localStorage.setItem("token", res.token)
+                dispatch(setUserDetails({ email: res.result.email, password: res.result.password, name: res.result.name, phone: res.result.phone ,id:res.result._id,image:res.result.profile}));
+                console.log("res");
                 navigate('/')
-            }else{
+            } else {
                 alert(res.errorMessage);
             }
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err);
         })
 
 
-        
-        
-        
-    }
-    let signIn=async (e)=>{
-        e.preventDefault();
-        function validateEmail(email) {
-            const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
-            return pattern.test(email);
-        }
-        if(!validateEmail(email)){
-            setError("invalid email");
-            return;
-        }else if(password.trim() === "" || password.length < 8){
-            setError("password should be atleast 8 characters long");
-            return;
-        }else setError("");
-        await LogInApi({data:{email,password}}).then((res)=>{
-            if(res.message){
-                alert(res.message);
-                navigate('/home')
-            }
-        })
-        console.log('im here in sign in datas are valid:', email, password);
+
 
     }
-    let adminLogin = async (e) => {
+    let signIn = async (e) => {
         e.preventDefault();
+        let newda = new FormData(e.currentTarget);
+        let email = newda.get("email")
+        let password = newda.get("password")
+        console.log(email, password);
         function validateEmail(email) {
             const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
             return pattern.test(email);
@@ -81,9 +70,36 @@ function SignInPage() {
         if (!validateEmail(email)) {
             setError("invalid email");
             return;
-        }else if(password.trim() === "" || password.length < 5){
+        } else if (password.trim() === "" || password.length < 8) {
+            setError("password should be atleast 8 characters long");
+            return;
+        } else setError("");
+        await LogInApi({ data: { email, password } }).then((res) => {
+            if (res.message) {
+                alert(res.message);
+                navigate('/')
+
+            }
+        })
+        console.log('im here in sign in datas are valid:', email, password);
+
+    }
+    let adminLogin = async (e) => {
+        e.preventDefault();
+        let newda = new FormData(e.currentTarget);
+        let email = newda.get("email")
+        let password = newda.get("password")
+        console.log(email, password);
+        function validateEmail(email) {
+            const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
+            return pattern.test(email);
+        }
+        if (!validateEmail(email)) {
+            setError("invalid email");
+            return;
+        } else if (password.trim() === "" || password.length < 5) {
             setError("password should be atleast 5 characters long");
-        }else setError("");
+        } else setError("");
         console.log('im here in admin sign in datas are valid:', email, password);
     }
     return (
@@ -118,26 +134,26 @@ function SignInPage() {
 
                                     <div>
                                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Name</label>
-                                        <input type="text" name="name" id="name" onChange={(e) => setName(e.target.value)} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your name" />
+                                        <input type="text" name="name" id="name" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your name" />
                                     </div>
                                     <div>
                                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                                        <input type="email" name="email" id="email" onChange={(e) => setEmail(e.target.value)} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your email" />
+                                        <input type="email" name="email" id="email" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Enter your email" />
                                     </div>
                                     <div>
                                         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                        <input type="password" name="password" id="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        <input type="password" name="password" id="password" placeholder="Enter your password" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                                     </div>
                                     <div>
                                         <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone Number</label>
-                                        <input type="number" min={0} max={9999999999} name="phone" id="phone" placeholder="Enter your phone number" onChange={(e) => setPhone(e.target.value)} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        <input type="number" min={0} max={9999999999} name="phone" id="phone" placeholder="Enter your phone number" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                                     </div>
                                     <div className="flex items-start" >
-                                        <div className="flex items-center h-5" onClick={() =>{ setAdmin(admin? 0 : 1), console.log(admin)} } >
-                                            <input name='isAdmin'  id="terms" aria-describedby="terms" type="checkbox" value={true} className="w-4 h-4 border border-gray-300 rounded bg-gray-500 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" />
+                                        <div className="flex items-center h-5" onClick={() => { }}>
+                                            <input name='isAdmin' id="terms" aria-describedby="terms" type="checkbox" value={true} className="w-4 h-4 border border-gray-300 rounded bg-gray-500 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" onClick={(e) => { setAdmin(e.target.value) }} />
                                         </div>
                                         <div className="ml-3 text-sm">
-                                            <label htmlFor="terms"  className="font-light text-gray-500 dark:text-gray-300">Admin</label>
+                                            <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">Admin</label>
                                         </div>
                                     </div>
                                     <button type="submit" className="w-full border border-slate-500 hover:border-slate-200 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Create an account</button>
@@ -178,11 +194,11 @@ function SignInPage() {
                                 <form className="space-y-4 md:space-y-6" onSubmit={signIn}>
                                     <div>
                                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                                        <input type="email" name="email" id="email" onChange={(e) => { setEmail(e.target.value) }} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" />
+                                        <input type="email" name="email" id="email" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" />
                                     </div>
                                     <div>
                                         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                        <input type="password" name="password" id="password" onChange={(e) => { setPassword(e.target.value) }} placeholder="••••••••" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                                        <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                                     </div>
                                     <button type="submit" className="w-full border border-slate-500 hover:border-slate-200 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Submit</button>
                                     <p className="cursor-none text-sm font-light text-gray-500 dark:text-gray-400">
@@ -223,11 +239,11 @@ function SignInPage() {
                                 <form className="space-y-4 md:space-y-6" onSubmit={adminLogin}>
                                     <div>
                                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                                        <input type="email" name="email" id="email" onChange={(e) => { setEmail(e.target.value) }} className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
+                                        <input type="email" name="email" id="email" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
                                     </div>
                                     <div>
                                         <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                        <input type="password" name="password" id="password" onChange={(e) => { setPassword(e.target.value) }} placeholder="••••••••" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                        <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-500 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                                     </div>
                                     <button type="submit" className="w-full border border-slate-500 hover:border-slate-200 text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Submit</button>
                                     <p className="cursor-none text-sm font-light text-gray-500 dark:text-gray-400">

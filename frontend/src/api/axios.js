@@ -7,7 +7,7 @@ let api = axios.create({
 export let LogInApi = async ({data}) => {
     console.log("data from api: ",data);
     let a=await api.post('/user/logIn', data)
-    console.log("a",a);
+    console.log("signuped data",a.data);
     return a.data
 }
 export let sampleApi = () => {
@@ -19,6 +19,6 @@ export let sampleApi = () => {
 }
 export let SignUpApi=async ({data})=>{
     let a=await api.post('/user/signUp', data)
-    console.log("a",a);
+    console.log("login",a);
     return a.data
 }

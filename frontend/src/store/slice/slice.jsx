@@ -30,6 +30,7 @@ const userSlice = createSlice({
           }
      }
 })
+console.log("userSlice", userSlice);
 
 export const { setUserDetails, logoutDetails } = userSlice.actions
 

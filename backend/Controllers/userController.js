@@ -1,26 +1,28 @@
 let userModal= require( "../Modals/user.js");
 let bcrypt= require( 'bcrypt')
-
-
+let jwt= require( 'jsonwebtoken')
 
 
 let signUp = async (req, res) => {
     try {
         let frontendData=  req.body
-  
+        console.log("frontendData",frontendData);
         let existedOrNot = await userModal.findOne({ email: frontendData.email })
         if (!existedOrNot) {
             let password=await bcrypt.hash(frontendData.password,10)
-            console.log('newAccount');
             let data = new userModal({
                 name: frontendData.name,
                 email: frontendData.email,
                 phone: frontendData.phone,
                 password: password,
-                adminOrNot: frontendData.isAdmin
+                adminOrNot: frontendData.isAdmin,
+                profile:'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+
             })
             data.save()
-            res.json({ success: true, message: "user created successfully" , result:data})
+            let token=jwt.sign({id:data._id},process.env.JWT_SECRET,{expiresIn:'1d'})
+            res.json({ success: true, message: "user created successfully" , result:data,token:token})
+
         } else {
             res.json({ success: false, errorMessage: "user already exist, please Login...!" })
         }

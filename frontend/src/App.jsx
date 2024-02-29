@@ -19,8 +19,8 @@ function App() {
           <Route path='/register' element={<SignInPage />} />
           <Route path='/admin' element={<AdminPage />} />
           <Route path='/admin/dashboard' element={<AdminDashBoard />} />
-          <Route path='/home' element={<UserProfile/>} />
-          <Route path='/' element={<HomePage />} />
+          <Route path='/' element={<UserProfile/>} />
+          <Route path='/editProfile' element={<HomePage />} />
         </Routes>
       </Router>
     </>

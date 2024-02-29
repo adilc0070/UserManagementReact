@@ -18,9 +18,8 @@ let userScheema = mongoose.Schema({
         type: String,
         require: true
     },
-    adminOrNot: {
-        type: Boolean,
-        require: true
+    adminOrNot:{
+        type:String
     }
 })
 
