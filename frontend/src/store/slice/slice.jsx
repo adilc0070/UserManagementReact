@@ -14,7 +14,6 @@ const userSlice = createSlice({
      initialState,
      reducers: {
           setUserDetails: (state, action) => {
-               console.log(action.payload);
                state.id = action.payload.id;
                state.name = action.payload.name;
                state.email = action.payload.email
@@ -30,8 +29,6 @@ const userSlice = createSlice({
           }
      }
 })
-console.log("userSlice", userSlice);
-
 export const { setUserDetails, logoutDetails } = userSlice.actions
 
 export default userSlice.reducer

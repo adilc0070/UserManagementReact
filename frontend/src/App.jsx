@@ -14,7 +14,6 @@ function App() {
   return (
     <>
       <Router>
-          <h1 className='text-3xl text-white-500 font-bold underline'>hello</h1>
         <Routes>
           <Route path='/register' element={<SignInPage />} />
           <Route path='/admin' element={<AdminPage />} />

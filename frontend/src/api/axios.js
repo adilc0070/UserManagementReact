@@ -5,20 +5,22 @@ let api = axios.create({
 })
 
 export let LogInApi = async ({data}) => {
-    console.log("data from api: ",data);
     let a=await api.post('/user/logIn', data)
-    console.log("signuped data",a.data);
     return a.data
 }
-export let sampleApi = () => {
-    api.post('/sample').then((res) => {
-        console.log(res.data)
-    }).catch((err) => {
-        console.log(err)
-    })
+
+export let Users=async ()=>{
+    let a=await api.get('/admin/usersList')
+    console.log("usersList",a.data);
+    return a.data
 }
 export let SignUpApi=async ({data})=>{
     let a=await api.post('/user/signUp', data)
-    console.log("login",a);
+    return a.data
+}
+
+export let adminSignInApi=async ({data})=>{
+    let a=await api.post('/admin/login', data)
+    console.log("adminLogin",a.data);
     return a.data
 }

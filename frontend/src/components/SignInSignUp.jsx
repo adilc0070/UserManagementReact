@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { LogInApi, SignUpApi } from '../api/axios';
+import { LogInApi, SignUpApi, adminSignInApi } from '../api/axios';
 import { useNavigate } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { setUserDetails } from '../store/slice/slice';
@@ -17,8 +17,7 @@ function SignInPage() {
         let name = newda.get("name")
         let password = newda.get("password")
         let phone = newda.get("phone")
-        let admin = newda.get("isAdmin")
-        console.log(email, name, password, phone, admin);
+        let admin = newda.get("isAdmin") || false
 
         function validateEmail(email) {
             const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
@@ -40,11 +39,9 @@ function SignInPage() {
         } else setError("");
         await SignUpApi({ data: { email, password, name, phone, admin } }).then((res) => {
             if (res.success) {
-                console.log(res);
                 alert(res.errorMessage);
                 localStorage.setItem("token", res.token)
                 dispatch(setUserDetails({ email: res.result.email, password: res.result.password, name: res.result.name, phone: res.result.phone ,id:res.result._id,image:res.result.profile}));
-                console.log("res");
                 navigate('/')
             } else {
                 alert(res.errorMessage);
@@ -62,7 +59,6 @@ function SignInPage() {
         let newda = new FormData(e.currentTarget);
         let email = newda.get("email")
         let password = newda.get("password")
-        console.log(email, password);
         function validateEmail(email) {
             const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
             return pattern.test(email);
@@ -75,13 +71,12 @@ function SignInPage() {
             return;
         } else setError("");
         await LogInApi({ data: { email, password } }).then((res) => {
-            if (res.message) {
+            if (res.success) {
                 alert(res.message);
                 navigate('/')
 
             }
         })
-        console.log('im here in sign in datas are valid:', email, password);
 
     }
     let adminLogin = async (e) => {
@@ -100,7 +95,13 @@ function SignInPage() {
         } else if (password.trim() === "" || password.length < 5) {
             setError("password should be atleast 5 characters long");
         } else setError("");
-        console.log('im here in admin sign in datas are valid:', email, password);
+        await adminSignInApi({ data: { email, password } }).then((res) => {
+            if(res.success){
+                alert(res.message);
+                console.log(res);
+                navigate('/admin')
+            }
+        })
     }
     return (
         <>
@@ -150,7 +151,7 @@ function SignInPage() {
                                     </div>
                                     <div className="flex items-start" >
                                         <div className="flex items-center h-5" onClick={() => { }}>
-                                            <input name='isAdmin' id="terms" aria-describedby="terms" type="checkbox" value={true} className="w-4 h-4 border border-gray-300 rounded bg-gray-500 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" onClick={(e) => { setAdmin(e.target.value) }} />
+                                            <input name='isAdmin' id="terms" aria-describedby="terms" type="checkbox" value={true} className="w-4 h-4 border border-gray-300 rounded bg-gray-500 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800"/>
                                         </div>
                                         <div className="ml-3 text-sm">
                                             <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">Admin</label>
