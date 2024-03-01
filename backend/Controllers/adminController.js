@@ -37,8 +37,10 @@ let usersList = async (req, res) => {
 
 let addUser = async (req, res) => {
     try {
+        console.log('addUser', req.body);
         let { name, email, phone, password } = req.body
         password = await bcrypt.hash(password, 10)
+        console.log("password", password);
         let existedOrNot = await userModal.findOne({ email: email })
         if (!existedOrNot) {
             let data = new userModal({
@@ -46,12 +48,13 @@ let addUser = async (req, res) => {
                 email: email,
                 phone: phone,
                 password: password,
-                adminOrNot: req.body.adminOrNot
+                profile:'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                admin:false
             })
-
-            res.json({ success: true, message: "user created successfully", result: data })
+            data.save()
+            res.json({ success: true, message: "user created successfully" })
         } else {
-            res.json({ success: false, message: "user already exist, please Login...!" })
+            res.json({ success: false, errorMessage: "user already exist, please Login...!" })
         }
     }
     catch (error) {
@@ -61,6 +64,7 @@ let addUser = async (req, res) => {
 
 let editUser = async (req, res) => {
     try {
+        console.log('editUser', req.body);
         let { name, email, phone, password } = req.body
         password = await bcrypt.hash(password, 10)
         let data = await userModal.findOneAndUpdate({ email: email }, {
@@ -69,7 +73,7 @@ let editUser = async (req, res) => {
             phone: phone,
             password: password,
         })
-
+        console.log("data:::", data);
 
     } catch (error) {
         console.log(error);

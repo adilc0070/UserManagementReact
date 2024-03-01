@@ -41,8 +41,9 @@ function SignInPage() {
             if (res.success) {
                 alert(res.errorMessage);
                 localStorage.setItem("token", res.token)
+                console.log('sda', res.result);
                 dispatch(setUserDetails({ email: res.result.email, password: res.result.password, name: res.result.name, phone: res.result.phone ,id:res.result._id,image:res.result.profile}));
-                navigate('/')
+                navigate('/user')
             } else {
                 alert(res.errorMessage);
             }
@@ -73,8 +74,10 @@ function SignInPage() {
         await LogInApi({ data: { email, password } }).then((res) => {
             if (res.success) {
                 alert(res.message);
-                navigate('/')
-
+                dispatch(setUserDetails({ email: res.result.email, password: res.result.password, name: res.result.name, phone: res.result.phone ,id:res.result._id,image:res.result.profile}))
+                navigate('/user')
+            }else{
+                alert(res.message)
             }
         })
 
@@ -84,7 +87,6 @@ function SignInPage() {
         let newda = new FormData(e.currentTarget);
         let email = newda.get("email")
         let password = newda.get("password")
-        console.log(email, password);
         function validateEmail(email) {
             const pattern = /^[a-zA-Z0-9._]+@(?:[a-zA-Z0-9-]+\.)+(com|org|net|edu)$/i;
             return pattern.test(email);

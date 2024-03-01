@@ -32,22 +32,44 @@ let signUp = async (req, res) => {
 
 }
 let logIn = async (req, res) => {
-    
     try {
         let aa=req.body
         let userData = await userModal.findOne({ email: aa.email })
         if (!userData) {
             res.json({ success: false, errorMessage: "user not found" })
         } else {
-            if (bcrypt.compare(aa.password, userData.password)) {
-                res.json({ success: true ,message:"login success"})
+            let match = await bcrypt.compare(aa.password, userData.password)
+            console.log("match", match);
+            if (match) {
+                res.json({ success: true ,message:"login success" ,result:userData})
             } else {
-                res.json({ success: false, errorMessage: "password not match" })
+                res.json({ success: false, message: "password not match" })
             }
         }
     } catch (error) {
         console.log(error);
     }
 }
+let editProfile=async(req,res)=>{
+    try {
+        console.log("edit profile in controller",req.body);
+        let {name,email,phone,password}=req.body
+        let oldData=await userModal.findOne({email:email})
+        password=password.length>0 ? await bcrypt.hash(password,10) : oldData.password
+        let profile=req.file ? req.file.filename : oldData.profile
+        console.log("profile",profile);
+        let userDetails= await userModal.findOneAndUpdate({email:email},{
+            name:name,
+            email:email,
+            phone:phone,
+            password:password,
+            profile:profile
+        },{new:true})
 
-module.exports= { signUp, logIn } 
+        res.json({success:true,result:userDetails,message:"profile updated successfully"})
+
+    }catch(error){
+        console.log(error);
+    }
+}
+module.exports= { signUp, logIn,editProfile} 

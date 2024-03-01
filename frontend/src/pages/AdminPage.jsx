@@ -8,7 +8,7 @@ function AdminPage() {
     <>
       <Heading />
       <AdminDashBoard />
-      <AddUser/>
+
     </>
   );
 }
